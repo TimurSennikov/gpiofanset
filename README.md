@@ -7,4 +7,4 @@ this is a gpiofansetmodule. It must set the pin (4 by default) to high voltage w
 see main c file to set custom properties
 
 
-may not work yet, didn`t test it yet
+may not work, didn`t test it yet
