@@ -6,6 +6,7 @@
 #include <linux/fs.h>
 #include <linux/uaccess.h>
 #include <linux/fcntl.h>
+#include <linux/delay.h> 
 
 #define MAX_BUF 64
 #define LIMIT 70000                                                                            
@@ -22,8 +23,7 @@ static int getcputemp(void)
     struct file *fp;
     char path[MAX_BUF];
     int voltage;
-    int temperature;
-    ssize_t ret;
+    ssize_t temperature;
 
     snprintf(path, sizeof(path), "/sys/class/thermal/%s/temp", zone);
     
@@ -34,15 +34,12 @@ static int getcputemp(void)
         return 1;
     }
 
-    ret = kernel_read(fp, &temperature, sizeof(int), &fp->f_pos);
+    temperature = kernel_read(fp, &temperature, sizeof(int), &fp->f_pos);
 
     filp_close(fp, NULL);
 
-    return ret;
-}
+    return temperature;
 
-static int fandigitset(void)                                                                   
-{
     if (temperature >= LIMIT)
     {
         gpiod_set_value(fan, 1);
@@ -59,11 +56,11 @@ static int fandigitset(void)
 
     return 0;
 }
-static int main_init(void)                                                                   
+static int __init main_init(void)
 {
-    int ret = 0;                                                                               
+    int ret = 0;
 
-    fan = gpio_to_desc(GPIOFANPIN);    // Use GPIOFANPIN instead of hardcoding 4
+    fan = gpio_to_desc(GPIOFANPIN);
     if (!fan) {
         pr_err("Failed to get GPIO descriptor\n");
         return -ENODEV;
@@ -72,11 +69,14 @@ static int main_init(void)
     ret = gpiod_direction_output(fan, 0);
 
     pr_info("Current fan1 value: %d\n", gpiod_get_value(fan));
-
-    return ret;
+	
+	while(1){
+	getcputemp();
+	msleep(5000);
+	}
 }
 
-static void main_exit(void)                                                           
+static void __exit main_exit(void)
 {
     gpiod_put(fan);
 }
@@ -86,4 +86,3 @@ module_exit(main_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("GPIO fan Control");
-
