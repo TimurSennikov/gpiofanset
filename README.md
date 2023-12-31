@@ -1,6 +1,6 @@
 # GPIOFANSET
 
-this is a gpiofansetmodule. It must set the pin (4 by default) to high voltage when cpu temperature is above fixed temperature
+this is a gpiofanset module. It must set the pin (4 by default) to high voltage when cpu temperature is above fixed temperature
 
 
 
