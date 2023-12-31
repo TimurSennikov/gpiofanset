@@ -12,8 +12,8 @@ may not work, didn`t test it yet
 
 # COMPILE
 
-simply run """make"""
+simply run "make"
 
 # RUN
 
-load module with """insmod module.ko"""
+load module with "insmod module.ko"
